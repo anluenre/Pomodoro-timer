@@ -45,6 +45,7 @@ let alarmVol    = 0.8;
 
 const alarm = new Audio(SOUND_URL);
 alarm.preload = 'auto';
+alarm.addEventListener('ended', resetTimer);
 
 /* ── DOM refs ────────────────────────────────── */
 const $ = id => document.getElementById(id);
@@ -126,7 +127,7 @@ function tick() {
 }
 
 function startTimer() {
-  if (timerState === 'idle' || timerState === 'finished') {
+  if (timerState === 'idle') {
     secsLeft = presets[selectedIdx] * 60;
     renderTimer();
   }
@@ -141,6 +142,19 @@ function pauseTimer() {
   clearInterval(intervalId);
   intervalId = null;
   setCardState('paused');
+}
+
+function resetTimer() {
+  clearInterval(intervalId);
+  intervalId = null;
+
+  secsLeft = presets[selectedIdx] * 60;
+  renderTimer();
+
+  alarm.pause();
+  alarm.currentTime = 0;
+
+  setCardState('idle');
 }
 
 function handleAction() {
@@ -252,13 +266,13 @@ function init() {
     }
   });
 
- volSlider.addEventListener('input', () => {
-  alarmVol = volSlider.value / 100;
-  alarm.volume = alarmVol;
+  volSlider.addEventListener('input', () => {
+    alarmVol = volSlider.value / 100;
+    alarm.volume = alarmVol;
 
-  const value = volSlider.value;
-  volSlider.style.setProperty('--value', value + '%');
-});
+    const value = volSlider.value;
+    volSlider.style.setProperty('--value', value + '%');
+  });
 
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT') return;
