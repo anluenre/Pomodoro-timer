@@ -92,18 +92,14 @@ function reshuffleImages() {
 
 /* ── Image ───────────────────────────────────── */
 function showImage(idx) {
+  const nextSrc = IMG_BASE + encodeURIComponent(IMAGES[idx]);
+
   heroImg.style.opacity = '0';
 
-  const img = new Image();
-  img.src = IMG_BASE + encodeURIComponent(IMAGES[idx]);
-
-  img.onload = () => {
-    heroImg.src = img.src;
-
-    requestAnimationFrame(() => {
-      heroImg.style.opacity = '1';
-    });
-  };
+  setTimeout(() => {
+    heroImg.src = nextSrc;
+    heroImg.style.opacity = '1';
+  }, 180);
 
   curImgIdx = idx;
 }
