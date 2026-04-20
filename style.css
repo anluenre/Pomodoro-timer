@@ -156,7 +156,7 @@ body {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  padding: 0px 0 0px 12px;
+  padding: 0px 0 0px 0px;
   border-radius: 100px;
   transition: background 0.15s;
   -webkit-tap-highlight-color: transparent;
@@ -346,7 +346,7 @@ body {
     font-size: 62px;
     line-height: 1;
     text-align: center;
-    padding: 0 0 120px;
+    padding: 0 0 100px;
   }
 
   .mobile-pills {
