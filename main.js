@@ -32,63 +32,61 @@ const IMAGES = [
 const SOUND_URL = "/sounds/timer-finished.mp3";
 
 /* ── State ───────────────────────────────────── */
-let presets     = [5, 10, 20, 30];
+let presets = [5, 10, 20, 30];
 let selectedIdx = 0;
-let secsLeft    = presets[0] * 60;
+let secsLeft = presets[0] * 60;
 /** @type {'idle'|'running'|'paused'|'finished'} */
-let timerState  = 'idle';
-let intervalId  = null;
-let startedAt   = 0;
+let timerState = 'idle';
+let intervalId = null;
+let startedAt = 0;
 let startedWith = 0;
-let curImgIdx   = -1;
-let alarmVol    = 0.8;
+let curImgIdx = -1;
+let alarmVol = 0.8;
 let shuffledQueue = [];
 let queueIndex = 0;
+let audioUnlocked = false;
 
 const alarm = new Audio(SOUND_URL);
 alarm.preload = 'auto';
 alarm.addEventListener('ended', resetTimer);
 
-/* ────── alarm activation ─────────────────────────────────────*/
-let audioUnlocked = false;
+/* ── Audio unlock ────────────────────────────── */
+function unlockAudio() {
+  if (audioUnlocked) return;
 
-function playAlarm() {
-  alarm.pause();
+  alarm.volume = 0;
   alarm.currentTime = 0;
-  alarm.muted = false;
-  alarm.volume = alarmVol;
-  alarm.play().catch(() => {});
+
+  alarm.play()
+    .then(() => {
+      alarm.pause();
+      alarm.currentTime = 0;
+      alarm.volume = alarmVol;
+      audioUnlocked = true;
+    })
+    .catch(() => {});
 }
 
 /* ── DOM refs ────────────────────────────────── */
 const $ = id => document.getElementById(id);
 
-const card         = $('card');
-const heroImg      = $('heroImg');
-const timerEl      = $('timer');
-const settingsBtn  = $('settingsBtn');
-const durToggle    = $('durToggle');
-const durLabel     = $('durLabel');
-const durMenu      = $('durMenu');
-const overlay      = $('overlay');
-const volSlider    = $('volSlider');
+const card = $('card');
+const heroImg = $('heroImg');
+const timerEl = $('timer');
+const settingsBtn = $('settingsBtn');
+const durToggle = $('durToggle');
+const durLabel = $('durLabel');
+const durMenu = $('durMenu');
+const overlay = $('overlay');
+const volSlider = $('volSlider');
 const presetInputs = document.querySelectorAll('.preset-input');
-const durOpts      = document.querySelectorAll('.dur-opt');
-const shuffleBtns  = document.querySelectorAll('.btn-shuffle');
-const actionBtns   = document.querySelectorAll('.btn-action');
+const durOpts = document.querySelectorAll('.dur-opt');
+const shuffleBtns = document.querySelectorAll('.btn-shuffle');
+const actionBtns = document.querySelectorAll('.btn-action');
 
 /* ── Utilities ───────────────────────────────── */
 const pad = n => String(n).padStart(2, '0');
 const fmtTime = s => `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
-
-function pickOther(len, notIdx) {
-  if (len <= 1) return 0;
-  let i;
-  do {
-    i = Math.floor(Math.random() * len);
-  } while (i === notIdx);
-  return i;
-}
 
 function reshuffleImages() {
   shuffledQueue = [...IMAGES];
@@ -268,26 +266,22 @@ function init() {
   setCardState('idle');
 
   shuffleBtns.forEach(btn =>
-  btn.addEventListener('click', () => {
-    unlockAudio();
-    shuffle();
-  })
-);
+    btn.addEventListener('click', shuffle)
+  );
 
-actionBtns.forEach(btn =>
-  btn.addEventListener('click', () => {
-    unlockAudio();
-    handleAction();
-  })
-);
+  actionBtns.forEach(btn =>
+    btn.addEventListener('click', () => {
+      unlockAudio();
+      handleAction();
+    })
+  );
 
-  settingsBtn.addEventListener('click', () => {
-  unlockAudio();
-  openSettings();
-});
+  settingsBtn.addEventListener('click', openSettings);
+
   overlay.addEventListener('click', e => {
     if (e.target === overlay) closeSettings();
   });
+
   $('doneBtn').addEventListener('click', closeSettings);
 
   presetInputs.forEach((input, i) => {
@@ -326,11 +320,9 @@ actionBtns.forEach(btn =>
   });
 
   volSlider.addEventListener('input', () => {
-    alarmVol = volSlider.value / 100;
+    alarmVol = Number(volSlider.value) / 100;
     alarm.volume = alarmVol;
-
-    const value = volSlider.value;
-    volSlider.style.setProperty('--value', value + '%');
+    volSlider.style.setProperty('--value', volSlider.value + '%');
   });
 
   document.addEventListener('keydown', e => {
