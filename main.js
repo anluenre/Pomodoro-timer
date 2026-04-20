@@ -282,21 +282,42 @@ function init() {
     if (e.target === overlay) closeSettings();
   });
 
-  $('doneBtn').addEventListener('click', closeSettings);
+  $('doneBtn').addEventListener('click', () => {
+  presetInputs.forEach((input, i) => {
+    let v = parseInt(input.value, 10);
+
+    if (isNaN(v) || v <= 0) {
+      v = 1;
+    }
+
+    v = Math.min(999, v);
+
+    input.value = v;
+    presets[i] = v;
+  });
+
+  if (timerState === 'idle' || timerState === 'finished') {
+    secsLeft = presets[selectedIdx] * 60;
+    renderTimer();
+  }
+
+  refreshDurUI();
+  closeSettings();
+});
 
   presetInputs.forEach((input, i) => {
-    input.addEventListener('input', () => {
-      const v = Math.max(1, Math.min(99, parseInt(input.value, 10) || 1));
-      input.value = v;
-      presets[i] = v;
-      refreshDurUI();
+  input.addEventListener('input', () => {
+    const raw = input.value;
 
-      if (i === selectedIdx && (timerState === 'idle' || timerState === 'finished')) {
-        secsLeft = v * 60;
-        renderTimer();
-      }
-    });
+    if (raw === '') return;
+
+    const v = parseInt(raw, 10);
+
+    if (!isNaN(v)) {
+      presets[i] = Math.min(999, v);
+    }
   });
+});
 
   durToggle.addEventListener('click', e => {
     e.stopPropagation();
