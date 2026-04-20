@@ -41,6 +41,7 @@ let intervalId = null;
 let startedAt = 0;
 let startedWith = 0;
 let curImgIdx = -1;
+let activeHero = 'A';
 let alarmVol = 0.8;
 let shuffledQueue = [];
 let queueIndex = 0;
@@ -71,7 +72,8 @@ function unlockAudio() {
 const $ = id => document.getElementById(id);
 
 const card = $('card');
-const heroImg = $('heroImg');
+const heroImgA     = $('heroImgA');
+const heroImgB     = $('heroImgB');
 const timerEl = $('timer');
 const settingsBtn = $('settingsBtn');
 const durToggle = $('durToggle');
@@ -102,27 +104,19 @@ function reshuffleImages() {
 /* ── Image ───────────────────────────────────── */
 function showImage(idx) {
   const nextSrc = IMG_BASE + encodeURIComponent(IMAGES[idx]);
-  const isMobile = window.matchMedia('(max-width: 520px)').matches;
 
-  if (isMobile) {
-    const img = new Image();
-    img.src = nextSrc;
+  const currentImg = activeHero === 'A' ? heroImgA : heroImgB;
+  const nextImg = activeHero === 'A' ? heroImgB : heroImgA;
 
-    img.onload = () => {
-      heroImg.src = nextSrc;
-      heroImg.style.opacity = '1';
-    };
+  const loader = new Image();
+  loader.src = nextSrc;
 
-    curImgIdx = idx;
-    return;
-  }
-
-  heroImg.style.opacity = '0';
-
-  setTimeout(() => {
-    heroImg.src = nextSrc;
-    heroImg.style.opacity = '1';
-  }, 180);
+  loader.onload = () => {
+    nextImg.src = nextSrc;
+    nextImg.classList.add('active');
+    currentImg.classList.remove('active');
+    activeHero = activeHero === 'A' ? 'B' : 'A';
+  };
 
   curImgIdx = idx;
 }
