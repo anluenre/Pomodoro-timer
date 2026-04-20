@@ -156,7 +156,7 @@ body {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  padding: 12px 12px;
+  padding: 0px 0 0px 0px;
   border-radius: 100px;
   transition: background 0.15s;
   -webkit-tap-highlight-color: transparent;
@@ -288,11 +288,6 @@ body {
   50% { opacity: 0.4; }
 }
 
-/* ── Responsive: iPad ────────────────────────── */
-  .bg {
-    min-height: calc(100dvh - 48px);
-  }
-
 /* ── Responsive: phone ───────────────────────── */
 @media (max-width: 520px) {
   body {
@@ -325,10 +320,10 @@ body {
     display: none !important;
   }
 
-  .right-controls {
-    width: 100%;
-    justify-content: space-between;
-  }
+ .right-controls {
+  width: 100%;
+  justify-content: space-between;
+}
 
   .img-area {
   flex: 1;
@@ -339,11 +334,13 @@ body {
   padding: 0 0 0;
 }
 
-  .hero-stack {
-  width: min(100%, 300px);
-  height: 300px;
-  max-height: 360px;
-}
+  #heroImg {
+    width: min(100%, 300px);
+    height: auto;
+    max-height: 360px;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+  }
 
   .timer {
     font-size: 62px;
