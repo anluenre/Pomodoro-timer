@@ -336,11 +336,11 @@ body {
   }
 
   .timer {
-  font-size: 56px;
-  line-height: 1;
-  text-align: center;
-  padding: 0 0 20px;
-}
+    font-size: 62px;
+    line-height: 1;
+    text-align: center;
+    padding: 0 0 64px;
+  }
 
   .mobile-pills {
     display: flex !important;
